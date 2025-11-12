@@ -5,22 +5,19 @@ CART_SESSION_ID = 'cart'
 
 
 class Cart:
-    # برای ساخت سبد خری با سشن از تابع زیر استفاده می کنیم
+    
     def __init__(self, request):
         self.session = request.session
         cart = self.session.get(CART_SESSION_ID)
         if not cart:
             cart = self.session[CART_SESSION_ID] = {}
         self.cart = cart
-    # برای نمایش اجزای داخلی سبد خرید از تابع iter استفاده می کنیم
+
     def __iter__(self):
         cart = self.cart.copy()
-
         for item in cart.values():
             product = Product.objects.get(id=int(item['id']))
-            # محصولمون و ایدیشو رو می گیرم و می ریزیم داخل product
             item['product'] = Product.objects.get(id=int(item['id']))
-            # جمع قیمت ان محصول
             item['total'] = int(item['quantity']) * int(item['price'])
             item['unique_id'] = self.unique_id_generator(product.id,item['color'],item['size'])
             yield item
@@ -54,3 +51,4 @@ class Cart:
 
     def save(self):
         self.session.modified = True
+
